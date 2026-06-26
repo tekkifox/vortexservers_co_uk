@@ -32,7 +32,9 @@ export default async function HomePage() {
   const primaryHref = safeInternalHref(page?.primaryCtaHref, "/servers");
   const primaryLabel = page?.primaryCtaLabel || "Browse servers";
   const secondaryHref = safeInternalHref(page?.secondaryCtaHref, "/about");
-  const secondaryLabel = page?.secondaryCtaLabel || "Read more";
+const secondaryLabel = page?.secondaryCtaLabel || "Read more";
+const discordHref = "https://discord.gg/GCC2EekGz";
+const koFiHref = "https://ko-fi.com/vortexservers";
 
   return (
     <div className="stack">
@@ -53,27 +55,14 @@ export default async function HomePage() {
               <Link href={secondaryHref} className="button">
                 {secondaryLabel}
               </Link>
+              <a href={discordHref} className="button" target="_blank" rel="noreferrer">
+                Our Discord
+              </a>
+              <a href={koFiHref} className="button" target="_blank" rel="noreferrer">
+                Our Ko-fi
+              </a>
             </div>
           </div>
-
-          <aside className="detail-card">
-            <p className="section-kicker">Website scaffold</p>
-            <h2 className="section-title">Built for content and server data</h2>
-            <ul className="page-list">
-              <li>
-                <strong>CMS</strong>
-                <span>Decap CMS-backed markdown pages</span>
-              </li>
-              <li>
-                <strong>Server feed</strong>
-                <span>Pelican client API integration</span>
-              </li>
-              <li>
-                <strong>UI</strong>
-                <span>React cards, connection panels, and copy actions</span>
-              </li>
-            </ul>
-          </aside>
         </div>
       </section>
 

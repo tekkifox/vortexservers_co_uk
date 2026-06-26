@@ -32,7 +32,7 @@ export default function RootLayout({
               <span className="brand-mark">V</span>
               <span>
                 <strong>{siteConfig.name}</strong>
-                <small>Pelican-powered hosting</small>
+                <small>Pelican-powered uk game server hosting</small>
               </span>
             </Link>
 

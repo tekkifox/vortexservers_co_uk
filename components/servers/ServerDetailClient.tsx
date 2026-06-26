@@ -100,8 +100,8 @@ export function ServerDetailClient({ serverId }: ServerDetailClientProps) {
 
       <div className="stat-grid">
         <div className="stat">
-          <span className="stat-label">Status</span>
-          <strong>{server.status}</strong>
+          <span className="stat-label">Online</span>
+          <strong>{server.isOnline ? "Yes" : "No"}</strong>
         </div>
         <div className="stat">
           <span className="stat-label">Node</span>

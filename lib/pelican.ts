@@ -26,6 +26,7 @@ export interface PelicanServer {
   name: string;
   description: string;
   status: string;
+  isOnline: boolean;
   nodeName: string;
   allocation: PelicanAllocation | null;
   connection: PelicanConnectionDetails;
@@ -48,6 +49,7 @@ const demoServers: PelicanServer[] = [
     name: "Alpha Minecraft",
     description: "Vanilla plus a curated mod pack for community nights.",
     status: "running",
+    isOnline: true,
     nodeName: "eu-west-1",
     allocation: {
       ip: "play.vortexservers.local",
@@ -78,6 +80,7 @@ const demoServers: PelicanServer[] = [
     name: "Rust Outpost",
     description: "PvP survival with whitelisted groups and weekly wipes.",
     status: "starting",
+    isOnline: false,
     nodeName: "eu-west-2",
     allocation: {
       ip: "rust.vortexservers.local",
@@ -184,6 +187,10 @@ function isVisibleServer(server: PelicanServer) {
   return vortexTerms.some((term) => text.includes(term));
 }
 
+function isServerOnline(status: string) {
+  return ["online", "running"].includes(status.toLowerCase());
+}
+
 function pickAllocations(record: UnknownRecord, attributes: UnknownRecord) {
   const candidates = [
     getNestedValue(attributes, ["relationships", "allocations", "data"]),
@@ -247,6 +254,7 @@ function normaliseServer(record: unknown): PelicanServer {
     name: toStringValue(attributes.name ?? attributes.server_name ?? identifier, identifier),
     description: toStringValue(attributes.description ?? "", ""),
     status: toStringValue(attributes.status ?? attributes.state ?? "unknown", "unknown"),
+    isOnline: isServerOnline(toStringValue(attributes.status ?? attributes.state ?? "unknown", "unknown")),
     nodeName: toStringValue(
       getNestedValue(attributes, ["node", "name"]) ?? attributes.node_name ?? attributes.node ?? "",
       "",

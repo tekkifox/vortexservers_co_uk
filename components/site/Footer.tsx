@@ -32,6 +32,7 @@ export function Footer() {
 
       <div className="footer-bar">
         <span>Copyright {siteConfig.name} 2026</span>
+        <span>Contact <a href={`mailto:${siteConfig.contactEmail}`}>{siteConfig.contactEmail}</a></span>
       </div>
     </footer>
   );

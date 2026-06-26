@@ -350,11 +350,6 @@ select {
   overflow-wrap: anywhere;
 }
 
-.server-summary-status {
-  margin-top: 6px;
-  width: fit-content;
-}
-
 .server-meta-list,
 .detail-list,
 .page-list {
