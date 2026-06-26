@@ -8,7 +8,7 @@ export default async function ServersIndexPage() {
           <p className="section-kicker">Pelican</p>
           <h1 className="page-title">Servers</h1>
           <p className="lead">
-            Each server card exposes the live address, SFTP details, and a route
+            Each server card exposes the live address, current status, and a route
             to the full connection panel.
           </p>
         </div>

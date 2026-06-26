@@ -14,7 +14,7 @@ export function Footer() {
         <div>
           <p className="footer-kicker">Vortex Servers</p>
           <p className="footer-copy">
-            Game server hosting with CMS-managed pages and Pelican-backed server details.
+            UK community game server host
           </p>
         </div>
 

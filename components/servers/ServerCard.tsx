@@ -38,11 +38,6 @@ export function ServerCard({ server }: ServerCardProps) {
           <p className="meta">Memory</p>
           <div className="server-summary-value">{server.limits.memory ? `${server.limits.memory} MB` : "Unknown"}</div>
         </div>
-
-        <div className="server-summary">
-          <p className="meta">Node</p>
-          <div className="server-summary-value">{server.nodeName || "Unknown"}</div>
-        </div>
       </div>
 
       <Link href={`/servers/${encodeURIComponent(server.identifier)}`} className="button primary">
