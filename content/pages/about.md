@@ -1,9 +1,5 @@
 ---
-title: "About Vortex Servers"
-description: "A placeholder CMS page for hosting company copy, studio info, or support policies."
-eyebrow: "CMS page"
+title: "About VorteX Servers"
+description: "Learn more about our UK-based community game server hosting company, our team, and our commitment to providing reliable, high-performance hosting for your gaming needs."
+eyebrow: "About Us"
 ---
-
-Use this page for company background, support response times, service-level expectations, or community rules.
-
-You can expand the markdown content from Decap CMS without touching the React codebase.

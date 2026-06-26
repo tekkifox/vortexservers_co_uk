@@ -8,8 +8,7 @@ export default async function ServersIndexPage() {
           <p className="section-kicker">Pelican</p>
           <h1 className="page-title">Servers</h1>
           <p className="lead">
-            Each server card exposes the live address, current status, and a route
-            to the full connection panel.
+            Browse our community servers
           </p>
         </div>
       </div>
