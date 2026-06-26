@@ -28,26 +28,24 @@ export function ServerCard({ server }: ServerCardProps) {
 
       <p className="muted">{server.description || "Managed game server with live connection details."}</p>
 
-      <ul className="server-meta-list">
-        <li>
-          <strong>Connect</strong>
-          <span>{server.connection.address ?? "Unavailable"}</span>
-        </li>
-        <li>
-          <strong>SFTP</strong>
-          <span>
-            {server.connection.sftpHost && server.connection.sftpPort
-              ? `${server.connection.sftpHost}:${server.connection.sftpPort}`
-              : "Unavailable"}
-          </span>
-        </li>
-        <li>
-          <strong>Memory</strong>
-          <span>{server.limits.memory ? `${server.limits.memory} MB` : "Unknown"}</span>
-        </li>
-      </ul>
+      <div className="server-summary-grid">
+        <div className="server-summary">
+          <p className="meta">Connect</p>
+          <div className="server-summary-value">{server.connection.address ?? "Unavailable"}</div>
+        </div>
 
-      <Link href={`/servers/${encodeURIComponent(server.uuid ?? server.identifier)}`} className="button primary">
+        <div className="server-summary">
+          <p className="meta">Memory</p>
+          <div className="server-summary-value">{server.limits.memory ? `${server.limits.memory} MB` : "Unknown"}</div>
+        </div>
+
+        <div className="server-summary">
+          <p className="meta">Node</p>
+          <div className="server-summary-value">{server.nodeName || "Unknown"}</div>
+        </div>
+      </div>
+
+      <Link href={`/servers/${encodeURIComponent(server.identifier)}`} className="button primary">
         View server
       </Link>
     </article>

@@ -108,8 +108,8 @@ export function ServerDetailClient({ serverId }: ServerDetailClientProps) {
           <strong>{server.nodeName || "Unknown"}</strong>
         </div>
         <div className="stat">
-          <span className="stat-label">Identifier</span>
-          <strong>{server.identifier}</strong>
+          <span className="stat-label">Port</span>
+          <strong>{server.connection.port ?? "Unknown"}</strong>
         </div>
       </div>
 

@@ -36,7 +36,8 @@ export interface PelicanServer {
   };
 }
 
-const blockedServerTerms = ["privvy", "godsclan"];
+const blockedServerTerms = ["privvy", "godsclan", "private", "archive sftp", "pelican db host", "deusfam"];
+const blockedNameTerms = ["training"];
 const vortexTerms = ["vortexserver", "vortexservers", "vortex servers", "vortex"];
 
 const demoServers: PelicanServer[] = [
@@ -141,6 +142,14 @@ function getNestedValue(record: UnknownRecord, path: string[]) {
   return current;
 }
 
+function formatPublicHost(value: string | null | undefined) {
+  if (!value || value === "0.0.0.0") {
+    return "vortexservers.co.uk";
+  }
+
+  return value;
+}
+
 function lowerText(value: unknown) {
   return toStringValue(value).toLowerCase();
 }
@@ -163,6 +172,12 @@ function isVisibleServer(server: PelicanServer) {
   const text = serverSearchText(server);
 
   if (blockedServerTerms.some((term) => text.includes(term))) {
+    return false;
+  }
+
+  const name = server.name.toLowerCase();
+
+  if (blockedNameTerms.some((term) => name.includes(term))) {
     return false;
   }
 
@@ -219,9 +234,9 @@ function normaliseServer(record: unknown): PelicanServer {
     "demo-server",
   );
 
-  const ip = allocation?.alias ?? allocation?.ip ?? toStringValue(attributes.ip ?? attributes.host, "");
+  const ip = formatPublicHost(allocation?.alias ?? allocation?.ip ?? toStringValue(attributes.ip ?? attributes.host, ""));
   const port = allocation?.port ?? toNumberValue(attributes.port ?? attributes.port_number);
-  const sftpHost = toStringValue(sftpDetails.ip ?? sftpDetails.host ?? ip, "") || null;
+  const sftpHost = formatPublicHost(toStringValue(sftpDetails.ip ?? sftpDetails.host ?? ip, "")) || null;
   const sftpPort = toNumberValue(sftpDetails.port ?? sftpDetails.port_number) ?? null;
   const sftpUsername = toStringValue(sftpDetails.username ?? attributes.sftp_username ?? identifier, "") || null;
 
@@ -379,15 +394,7 @@ export async function getPelicanServer(identifier: string) {
       return null;
     }
 
-    if (server.identifier === identifier || server.id === identifier) {
-      return server;
-    }
-
-    if (!hasPelicanConfig() && process.env.NODE_ENV !== "production") {
-      return demoServers.find((server) => server.identifier === identifier || server.id === identifier) ?? null;
-    }
-
-    return null;
+    return server;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown Pelican API error";
 

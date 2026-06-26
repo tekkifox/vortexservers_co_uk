@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
+import { Footer } from "@/components/site/Footer";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -46,12 +47,7 @@ export default function RootLayout({
 
           <main className="site-main">{children}</main>
 
-          <footer className="site-footer">
-            <p>
-              {siteConfig.name} is scaffolded around the Pelican client API and
-              Decap CMS page content.
-            </p>
-          </footer>
+          <Footer />
         </div>
       </body>
     </html>
