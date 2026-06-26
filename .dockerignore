@@ -1,0 +1,12 @@
+.git
+.github
+.kilo
+.next
+node_modules
+coverage
+dist
+*.log
+.env
+.env.local
+.env.*.local
+public/uploads

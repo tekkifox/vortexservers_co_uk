@@ -1,0 +1,14 @@
+services:
+  web:
+    image: ${IMAGE_NAME:-ghcr.io/your-github-owner/vortexservers_co_uk:latest}
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      SITE_NAME: ${SITE_NAME:-Vortex Servers}
+      PELICAN_API_BASE_URL: ${PELICAN_API_BASE_URL:-https://panel.example.com/api/client}
+      PELICAN_API_TOKEN: ${PELICAN_API_TOKEN:-change-me}
+      NEXT_PUBLIC_PELICAN_PANEL_URL: ${NEXT_PUBLIC_PELICAN_PANEL_URL:-https://panel.example.com}
+    restart: unless-stopped

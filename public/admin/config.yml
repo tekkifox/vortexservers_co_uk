@@ -1,0 +1,45 @@
+backend:
+  name: git-gateway
+  branch: main
+local_backend: true
+publish_mode: editorial_workflow
+media_folder: public/uploads
+public_folder: /uploads
+collections:
+  - name: pages
+    label: Pages
+    folder: content/pages
+    create: true
+    extension: md
+    format: frontmatter
+    fields:
+      - label: Title
+        name: title
+        widget: string
+      - label: Description
+        name: description
+        widget: text
+        required: false
+      - label: Eyebrow
+        name: eyebrow
+        widget: string
+        required: false
+      - label: Primary CTA Label
+        name: primaryCtaLabel
+        widget: string
+        required: false
+      - label: Primary CTA Href
+        name: primaryCtaHref
+        widget: string
+        required: false
+      - label: Secondary CTA Label
+        name: secondaryCtaLabel
+        widget: string
+        required: false
+      - label: Secondary CTA Href
+        name: secondaryCtaHref
+        widget: string
+        required: false
+      - label: Body
+        name: body
+        widget: markdown
