@@ -6,6 +6,9 @@ interface ServerCardProps {
 }
 
 export function ServerCard({ server }: ServerCardProps) {
+  const badgeLabel = server.resourceState === "starting" ? "Coming up" : server.isOnline ? "Online" : "Offline";
+  const badgeClass = server.resourceState === "starting" ? "starting" : server.isOnline ? "online" : "offline";
+
   return (
     <article className="server-card">
       <div className="server-card-header">
@@ -13,9 +16,7 @@ export function ServerCard({ server }: ServerCardProps) {
           <p className="eyebrow">Pelican server</p>
           <h3 className="server-name">{server.name}</h3>
         </div>
-        <span className={`status ${server.isOnline ? "online" : "offline"}`}>
-          {server.isOnline ? "Online" : "Offline"}
-        </span>
+        <span className={`status ${badgeClass}`}>{badgeLabel}</span>
       </div>
 
       <p className="muted">{server.description || "Managed game server with live connection details."}</p>

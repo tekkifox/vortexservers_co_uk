@@ -85,6 +85,19 @@ export function ServerDetailClient({ serverId }: ServerDetailClientProps) {
     );
   }
 
+  const availabilityLabel =
+    server.resourceState === "starting"
+      ? "Coming up"
+      : server.isOnline
+        ? "Online"
+        : "Offline";
+  const availabilityClass =
+    server.resourceState === "starting"
+      ? "starting"
+      : server.isOnline
+        ? "online"
+        : "offline";
+
   return (
     <article className="server-page">
       <div className="page-topline">
@@ -100,8 +113,8 @@ export function ServerDetailClient({ serverId }: ServerDetailClientProps) {
 
       <div className="stat-grid">
         <div className="stat">
-          <span className="stat-label">Online</span>
-          <strong>{server.isOnline ? "Yes" : "No"}</strong>
+          <span className="stat-label">State</span>
+          <strong className={`status ${availabilityClass}`}>{availabilityLabel}</strong>
         </div>
         <div className="stat">
           <span className="stat-label">Node</span>

@@ -27,6 +27,8 @@ export interface PelicanServer {
   description: string;
   status: string;
   isOnline: boolean;
+  resourceState: string | null;
+  resourceIsSuspended: boolean;
   nodeName: string;
   allocation: PelicanAllocation | null;
   connection: PelicanConnectionDetails;
@@ -50,6 +52,8 @@ const demoServers: PelicanServer[] = [
     description: "Vanilla plus a curated mod pack for community nights.",
     status: "running",
     isOnline: true,
+    resourceState: "running",
+    resourceIsSuspended: false,
     nodeName: "eu-west-1",
     allocation: {
       ip: "play.vortexservers.local",
@@ -81,6 +85,8 @@ const demoServers: PelicanServer[] = [
     description: "PvP survival with whitelisted groups and weekly wipes.",
     status: "starting",
     isOnline: false,
+    resourceState: "starting",
+    resourceIsSuspended: false,
     nodeName: "eu-west-2",
     allocation: {
       ip: "rust.vortexservers.local",
@@ -191,6 +197,61 @@ function isServerOnline(status: string) {
   return ["online", "running"].includes(status.toLowerCase());
 }
 
+function isResourceServerOnline(currentState: string | null, isSuspended: boolean) {
+  return !isSuspended && currentState === "running";
+}
+
+function parseServerResources(payload: unknown) {
+  const record = pickRecord(payload);
+  const data = pickRecord(record?.attributes) ?? pickRecord(record?.data) ?? record;
+
+  if (!data) {
+    return null;
+  }
+
+  const currentState =
+    toStringValue(
+      data.current_state ??
+        data.currentState ??
+        (pickRecord(data.attributes)?.current_state ?? pickRecord(data.attributes)?.currentState ?? ""),
+      "",
+    ) || null;
+
+  const isSuspended = Boolean(
+    data.is_suspended ?? data.isSuspended ?? (pickRecord(data.attributes)?.is_suspended ?? false),
+  );
+
+  if (!currentState && !isSuspended) {
+    return null;
+  }
+
+  return {
+    currentState,
+    isSuspended,
+  };
+}
+
+async function fetchPelicanServerResources(identifier: string) {
+  try {
+    const payload = await fetchPelicanJSON(`servers/${identifier}/resources`);
+
+    return parseServerResources(payload);
+  } catch {
+    return null;
+  }
+}
+
+async function hydrateServerRuntimeState(server: PelicanServer) {
+  const runtimeState = await fetchPelicanServerResources(server.uuid ?? server.identifier);
+
+  return {
+    ...server,
+    resourceState: runtimeState?.currentState ?? null,
+    resourceIsSuspended: runtimeState?.isSuspended ?? false,
+    isOnline: runtimeState ? isResourceServerOnline(runtimeState.currentState, runtimeState.isSuspended) : isServerOnline(server.status),
+  };
+}
+
 function pickAllocations(record: UnknownRecord, attributes: UnknownRecord) {
   const candidates = [
     getNestedValue(attributes, ["relationships", "allocations", "data"]),
@@ -255,6 +316,8 @@ function normaliseServer(record: unknown): PelicanServer {
     description: toStringValue(attributes.description ?? "", ""),
     status: toStringValue(attributes.status ?? attributes.state ?? "unknown", "unknown"),
     isOnline: isServerOnline(toStringValue(attributes.status ?? attributes.state ?? "unknown", "unknown")),
+    resourceState: null,
+    resourceIsSuspended: false,
     nodeName: toStringValue(
       getNestedValue(attributes, ["node", "name"]) ?? attributes.node_name ?? attributes.node ?? "",
       "",
@@ -379,9 +442,11 @@ function extractSingle(payload: unknown) {
 export async function listPelicanServers() {
   try {
     const payload = await fetchPelicanJSON("?per_page=100");
-    const servers = extractList(payload).map(normaliseServer).filter(isVisibleServer);
+    const servers = await Promise.all(
+      extractList(payload).map(async (record) => hydrateServerRuntimeState(normaliseServer(record))),
+    );
 
-    return servers;
+    return servers.filter(isVisibleServer);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown Pelican API error";
 
@@ -396,7 +461,7 @@ export async function listPelicanServers() {
 export async function getPelicanServer(identifier: string) {
   try {
     const payload = await fetchPelicanJSON(`servers/${identifier}`);
-    const server = normaliseServer(extractSingle(payload));
+    const server = await hydrateServerRuntimeState(normaliseServer(extractSingle(payload)));
 
     if (!isVisibleServer(server)) {
       return null;

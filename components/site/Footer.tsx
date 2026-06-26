@@ -5,6 +5,7 @@ const footerLinks = [
   { href: "/privacy", label: "Privacy Policy" },
   { href: "/cookies", label: "Cookie Policy" },
   { href: "/terms", label: "Terms of Service" },
+  { href: "/rules", label: "Server Rules" },
 ];
 
 export function Footer() {
@@ -32,7 +33,7 @@ export function Footer() {
 
       <div className="footer-bar">
         <span>Copyright {siteConfig.name} 2026</span>
-        <span>Contact <a href={`mailto:${siteConfig.contactEmail}`}>{siteConfig.contactEmail}</a></span>
+        <span>Built for Portainer and Pelican</span>
       </div>
     </footer>
   );
