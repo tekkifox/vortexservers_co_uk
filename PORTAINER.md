@@ -18,6 +18,8 @@ For this repository it will usually be:
 
 `ghcr.io/<your-github-username>/vortexservers_co_uk:latest`
 
+After the image is published, the `Trigger Portainer webhook` workflow can call your Portainer stack webhook automatically when `main` completes successfully.
+
 ## 2. Create the Portainer stack
 
 In Portainer:
@@ -40,11 +42,17 @@ Required variables:
 
 If the repo is private, add the GitHub credentials Portainer needs to read the repository before deploying the stack.
 
-## 4. Deploy
+## 4. Add the GitHub webhook secret
+
+Create a repository secret in GitHub named `PORTAINER_WEBHOOK_URL` and set it to the Portainer stack webhook URL.
+
+In Portainer, open the stack and create or copy the stack webhook URL from the webhook action. The workflow will send a `POST` request to that URL after the image publish workflow succeeds on `main`.
+
+## 5. Deploy
 
 After the stack is created, Portainer will pull the image and start the service on port `3000`.
 
-## 5. If the registry is private
+## 6. If the registry is private
 
 If the GitHub Container Registry package is private:
 
