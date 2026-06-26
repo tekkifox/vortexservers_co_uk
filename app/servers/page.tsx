@@ -1,9 +1,6 @@
-import { ServerGrid } from "@/components/servers/ServerGrid";
-import { listPelicanServers } from "@/lib/pelican";
+import { ServersDirectory } from "@/components/servers/ServersDirectory";
 
 export default async function ServersIndexPage() {
-  const servers = await listPelicanServers();
-
   return (
     <section className="section">
       <div className="page-header">
@@ -17,17 +14,7 @@ export default async function ServersIndexPage() {
         </div>
       </div>
 
-      {servers.length > 0 ? (
-        <ServerGrid servers={servers} />
-      ) : (
-        <div className="empty-state">
-          <h2>No servers available</h2>
-          <p>
-            Add a Pelican API token and base URL to connect this scaffold to a
-            real panel.
-          </p>
-        </div>
-      )}
+      <ServersDirectory emptyMessage="Add a Pelican API token and base URL to connect this scaffold to a real panel." />
     </section>
   );
 }

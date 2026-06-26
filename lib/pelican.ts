@@ -36,11 +36,14 @@ export interface PelicanServer {
   };
 }
 
+const blockedServerTerms = ["privvy", "godsclan"];
+const vortexTerms = ["vortexserver", "vortexservers", "vortex servers", "vortex"];
+
 const demoServers: PelicanServer[] = [
   {
     id: "demo-1",
     identifier: "alpha-minecraft",
-    uuid: null,
+    uuid: "11111111-1111-1111-1111-111111111111",
     name: "Alpha Minecraft",
     description: "Vanilla plus a curated mod pack for community nights.",
     status: "running",
@@ -70,7 +73,7 @@ const demoServers: PelicanServer[] = [
   {
     id: "demo-2",
     identifier: "rust-outpost",
-    uuid: null,
+    uuid: "22222222-2222-2222-2222-222222222222",
     name: "Rust Outpost",
     description: "PvP survival with whitelisted groups and weekly wipes.",
     status: "starting",
@@ -136,6 +139,34 @@ function getNestedValue(record: UnknownRecord, path: string[]) {
   }
 
   return current;
+}
+
+function lowerText(value: unknown) {
+  return toStringValue(value).toLowerCase();
+}
+
+function serverSearchText(server: PelicanServer) {
+  return [
+    server.name,
+    server.identifier,
+    server.description,
+    server.nodeName,
+    server.connection.ip,
+    server.connection.alias,
+    server.connection.sftpHost,
+  ]
+    .map((value) => lowerText(value))
+    .join(" ");
+}
+
+function isVisibleServer(server: PelicanServer) {
+  const text = serverSearchText(server);
+
+  if (blockedServerTerms.some((term) => text.includes(term))) {
+    return false;
+  }
+
+  return vortexTerms.some((term) => text.includes(term));
 }
 
 function pickAllocations(record: UnknownRecord, attributes: UnknownRecord) {
@@ -225,19 +256,52 @@ function normaliseServer(record: unknown): PelicanServer {
 }
 
 function getApiBase() {
+  const toClientBase = (value: string) => {
+    const trimmed = value.replace(/\/$/, "");
+
+    if (trimmed.endsWith("/api/client")) {
+      return trimmed;
+    }
+
+    if (trimmed.endsWith("/api/application")) {
+      return trimmed.replace(/\/api\/application$/, "/api/client");
+    }
+
+    return `${trimmed}/api/client`;
+  };
+
   const explicitBase = process.env.PELICAN_API_BASE_URL;
 
   if (explicitBase) {
-    return explicitBase.replace(/\/$/, "");
+    return toClientBase(explicitBase);
   }
 
   const panelUrl = process.env.NEXT_PUBLIC_PELICAN_PANEL_URL ?? siteConfig.panelUrl;
 
-  if (panelUrl.includes("/api/client")) {
-    return panelUrl.replace(/\/$/, "");
+  return toClientBase(panelUrl);
+}
+
+function hasPelicanConfig() {
+  return Boolean(
+    process.env.PELICAN_CLIENT_API_TOKEN &&
+      (process.env.PELICAN_API_BASE_URL || process.env.NEXT_PUBLIC_PELICAN_PANEL_URL),
+  );
+}
+
+function getClientToken() {
+  const token = process.env.PELICAN_CLIENT_API_TOKEN?.trim();
+
+  if (!token) {
+    return null;
   }
 
-  return `${panelUrl.replace(/\/$/, "")}/api/client`;
+  if (token.length <= 16) {
+    throw new Error(
+      "PELICAN_CLIENT_API_TOKEN looks like an API key identifier, not the full secret token. Copy the secret_token value returned when the key is created in Pelican.",
+    );
+  }
+
+  return token;
 }
 
 async function fetchPelicanJSON(path: string) {
@@ -247,17 +311,19 @@ async function fetchPelicanJSON(path: string) {
     Accept: "application/json",
   };
 
-  if (process.env.PELICAN_API_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.PELICAN_API_TOKEN}`;
+  const token = getClientToken();
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
 
   const response = await fetch(url, {
     headers,
-    next: { revalidate: 30 },
+    cache: "no-store",
   });
 
   if (!response.ok) {
-    throw new Error(`Pelican API request failed: ${response.status} ${response.statusText}`);
+    throw new Error(`Pelican API request failed: ${response.status} ${response.statusText} (${url.toString()})`);
   }
 
   return response.json() as Promise<unknown>;
@@ -289,28 +355,46 @@ function extractSingle(payload: unknown) {
 
 export async function listPelicanServers() {
   try {
-    const payload = await fetchPelicanJSON("");
-    const servers = extractList(payload).map(normaliseServer);
+    const payload = await fetchPelicanJSON("?per_page=100");
+    const servers = extractList(payload).map(normaliseServer).filter(isVisibleServer);
 
-    return servers.length > 0 ? servers : demoServers;
-  } catch {
-    return demoServers;
+    return servers;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown Pelican API error";
+
+    if (!hasPelicanConfig() && process.env.NODE_ENV !== "production") {
+      return demoServers;
+    }
+
+    throw new Error(`Failed to load servers from Pelican: ${message}`);
   }
 }
 
 export async function getPelicanServer(identifier: string) {
-  const demoMatch = demoServers.find((server) => server.identifier === identifier || server.id === identifier);
-
   try {
     const payload = await fetchPelicanJSON(`servers/${identifier}`);
     const server = normaliseServer(extractSingle(payload));
+
+    if (!isVisibleServer(server)) {
+      return null;
+    }
 
     if (server.identifier === identifier || server.id === identifier) {
       return server;
     }
 
-    return demoMatch ?? null;
-  } catch {
-    return demoMatch ?? null;
+    if (!hasPelicanConfig() && process.env.NODE_ENV !== "production") {
+      return demoServers.find((server) => server.identifier === identifier || server.id === identifier) ?? null;
+    }
+
+    return null;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown Pelican API error";
+
+    if (!hasPelicanConfig() && process.env.NODE_ENV !== "production") {
+      return demoServers.find((server) => server.identifier === identifier || server.id === identifier) ?? null;
+    }
+
+    throw new Error(`Failed to load server from Pelican: ${message}`);
   }
 }

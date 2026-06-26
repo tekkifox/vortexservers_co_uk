@@ -47,7 +47,7 @@ export function ServerCard({ server }: ServerCardProps) {
         </li>
       </ul>
 
-      <Link href={`/servers/${encodeURIComponent(server.identifier)}`} className="button primary">
+      <Link href={`/servers/${encodeURIComponent(server.uuid ?? server.identifier)}`} className="button primary">
         View server
       </Link>
     </article>

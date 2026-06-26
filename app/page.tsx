@@ -1,9 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Markdown } from "@/components/site/Markdown";
-import { ServerGrid } from "@/components/servers/ServerGrid";
+import { ServersDirectory } from "@/components/servers/ServersDirectory";
 import { getPageBySlug } from "@/lib/content";
-import { listPelicanServers } from "@/lib/pelican";
+
+function safeInternalHref(value: string | undefined, fallback: string) {
+  if (!value) {
+    return fallback;
+  }
+
+  if (value.startsWith("/") && !value.startsWith("//")) {
+    return value;
+  }
+
+  return fallback;
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("home");
@@ -17,10 +28,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [page, servers] = await Promise.all([getPageBySlug("home"), listPelicanServers()]);
-  const primaryHref = page?.primaryCtaHref || "/servers";
+  const page = await getPageBySlug("home");
+  const primaryHref = safeInternalHref(page?.primaryCtaHref, "/servers");
   const primaryLabel = page?.primaryCtaLabel || "Browse servers";
-  const secondaryHref = page?.secondaryCtaHref || "/about";
+  const secondaryHref = safeInternalHref(page?.secondaryCtaHref, "/about");
   const secondaryLabel = page?.secondaryCtaLabel || "Read more";
 
   return (
@@ -83,7 +94,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <ServerGrid servers={servers} />
+        <ServersDirectory />
       </section>
     </div>
   );

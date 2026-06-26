@@ -1,3 +1,5 @@
+"use client";
+
 import { CopyButton } from "@/components/ui/CopyButton";
 import type { PelicanServer } from "@/lib/pelican";
 
