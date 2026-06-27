@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import logo from "../images/va_logo.png";
 import "./globals.css";
 import { Footer } from "@/components/site/Footer";
 import { siteConfig } from "@/lib/site";
@@ -30,7 +32,14 @@ export default function RootLayout({
         <div className="app-shell">
           <header className="site-header">
             <Link href="/" className="brand">
-              <span className="brand-mark">V</span>
+              <Image
+                src={logo}
+                alt="Vortex Servers logo"
+                width={42}
+                height={42}
+                priority
+                className="brand-logo"
+              />
               <span>
                 <strong>{siteConfig.name}</strong>
                 <small>Pelican-powered uk game server hosting</small>

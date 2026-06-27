@@ -87,6 +87,17 @@ select {
   min-width: 0;
 }
 
+.brand-logo {
+  display: block;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  object-fit: contain;
+}
+
 .brand strong,
 .brand small {
   display: block;
@@ -98,17 +109,6 @@ select {
 .stat-label,
 .page-kicker {
   color: var(--muted);
-}
-
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent-strong), var(--accent));
-  color: #04111d;
-  font-weight: 800;
 }
 
 .nav {
