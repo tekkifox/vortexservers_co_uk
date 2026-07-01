@@ -2,18 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Markdown } from "@/components/site/Markdown";
-import { getAllPageSlugs, getPageBySlug } from "@/lib/content";
+import { getPageBySlug } from "@/lib/content";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface CmsPageProps {
   params: {
     slug: string;
   };
-}
-
-export async function generateStaticParams() {
-  const slugs = await getAllPageSlugs();
-
-  return slugs.filter((slug) => slug !== "home").map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: CmsPageProps): Promise<Metadata> {

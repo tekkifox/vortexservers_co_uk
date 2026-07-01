@@ -42,6 +42,7 @@ Required variables:
 - `GITHUB_REPO` - `owner/repo` path for the Decap backend
 - `GITHUB_OAUTH_CLIENT_ID` - GitHub OAuth app client ID
 - `GITHUB_OAUTH_CLIENT_SECRET` - GitHub OAuth app client secret
+- `GITHUB_CONTENT_TOKEN` - optional GitHub token used to read private CMS content at runtime
 
 Create the GitHub OAuth app with a callback URL of `https://your-site.example.com/callback`.
 

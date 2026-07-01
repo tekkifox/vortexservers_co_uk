@@ -9,7 +9,6 @@ on:
       - "public/uploads/**"
     tags:
       - "v*"
-      - "decap-cms/pending_publish"
   workflow_dispatch:
 
 permissions:

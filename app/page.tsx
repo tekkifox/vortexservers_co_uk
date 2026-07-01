@@ -4,6 +4,9 @@ import { Markdown } from "@/components/site/Markdown";
 import { ServersDirectory } from "@/components/servers/ServersDirectory";
 import { getPageBySlug } from "@/lib/content";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 function safeInternalHref(value: string | undefined, fallback: string) {
   if (!value) {
     return fallback;

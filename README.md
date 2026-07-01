@@ -34,3 +34,6 @@ For Pelican client API access, use a client/account API token and the `/api/clie
 The value in `PELICAN_CLIENT_API_TOKEN` must be the full `secret_token` copied when the key is created, not the short `pacc_...` identifier.
 For admin login with GitHub, set `GITHUB_REPO`, `GITHUB_OAUTH_CLIENT_ID`, and `GITHUB_OAUTH_CLIENT_SECRET` before starting the app.
 When you create the GitHub OAuth app, set its callback URL to `https://your-site.example.com/callback`.
+
+In production, CMS page content is read directly from GitHub at request time, so publishing content in Decap does not require a Docker image rebuild or redeploy.
+If the repo is private, also set `GITHUB_CONTENT_TOKEN` so the app can read page content from GitHub at runtime.
