@@ -40,7 +40,6 @@ Required variables:
 - `PELICAN_CLIENT_API_TOKEN` - Pelican client/account API token, using the full `secret_token` value from Pelican
 - `NEXT_PUBLIC_PELICAN_PANEL_URL` - public panel URL used in links
 - `GITHUB_REPO` - `owner/repo` path for the Decap backend
-- `GITHUB_OAUTH_BASE_URL` - public base URL of this site, used for `/auth` and `/callback`
 - `GITHUB_OAUTH_CLIENT_ID` - GitHub OAuth app client ID
 - `GITHUB_OAUTH_CLIENT_SECRET` - GitHub OAuth app client secret
 

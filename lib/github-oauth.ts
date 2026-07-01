@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import type { NextRequest } from "next/server";
+import { getPublicOrigin } from "@/lib/public-origin";
 
 const GITHUB_AUTHORIZE_PATH = "/login/oauth/authorize";
 const GITHUB_TOKEN_PATH = "/login/oauth/access_token";
@@ -13,16 +14,12 @@ export function getGithubHost() {
   return process.env.GITHUB_HOSTNAME?.trim() || "https://github.com";
 }
 
-export function getOauthBaseUrl(request: NextRequest) {
-  return trimTrailingSlash(process.env.GITHUB_OAUTH_BASE_URL?.trim() || request.nextUrl.origin);
-}
-
 export function buildAuthorizeUrl(request: NextRequest, state: string) {
   const githubHost = new URL(getGithubHost());
   const authorizeUrl = new URL(GITHUB_AUTHORIZE_PATH, githubHost);
   const params = new URLSearchParams({
     client_id: getRequiredEnv("GITHUB_OAUTH_CLIENT_ID"),
-    redirect_uri: `${getOauthBaseUrl(request)}/callback`,
+    redirect_uri: `${trimTrailingSlash(getPublicOrigin(request))}/callback`,
     scope: process.env.GITHUB_OAUTH_SCOPE?.trim() || "repo,user",
     state,
     allow_signup: "true",
@@ -70,7 +67,7 @@ export async function exchangeGitHubCode(request: NextRequest, code: string) {
     client_id: getRequiredEnv("GITHUB_OAUTH_CLIENT_ID"),
     client_secret: getRequiredEnv("GITHUB_OAUTH_CLIENT_SECRET"),
     code,
-    redirect_uri: `${getOauthBaseUrl(request)}/callback`,
+    redirect_uri: `${trimTrailingSlash(getPublicOrigin(request))}/callback`,
   });
 
   const response = await fetch(tokenUrl, {
@@ -114,7 +111,7 @@ function escapeHtml(value: string) {
 }
 
 function toOriginList(request: NextRequest) {
-  return [new URL(getOauthBaseUrl(request)).origin];
+  return [new URL(getPublicOrigin(request)).origin];
 }
 
 export function renderOauthResponse(request: NextRequest, provider: string, message: string, content: unknown) {
