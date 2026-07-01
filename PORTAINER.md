@@ -39,6 +39,12 @@ Required variables:
 - `PELICAN_API_BASE_URL` - Pelican client API root, usually `https://panel.example.com/api/client`
 - `PELICAN_CLIENT_API_TOKEN` - Pelican client/account API token, using the full `secret_token` value from Pelican
 - `NEXT_PUBLIC_PELICAN_PANEL_URL` - public panel URL used in links
+- `GITHUB_REPO` - `owner/repo` path for the Decap backend
+- `GITHUB_OAUTH_BASE_URL` - public base URL of this site, used for `/auth` and `/callback`
+- `GITHUB_OAUTH_CLIENT_ID` - GitHub OAuth app client ID
+- `GITHUB_OAUTH_CLIENT_SECRET` - GitHub OAuth app client secret
+
+Create the GitHub OAuth app with a callback URL of `https://your-site.example.com/callback`.
 
 If the repo is private, add the GitHub credentials Portainer needs to read the repository before deploying the stack.
 

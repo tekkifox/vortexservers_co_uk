@@ -2,6 +2,7 @@ backend:
   name: github
   repo: ${GITHUB_REPO}
   branch: main
+  base_url: ${GITHUB_OAUTH_BASE_URL}
 local_backend: true
 publish_mode: editorial_workflow
 media_folder: public/uploads
