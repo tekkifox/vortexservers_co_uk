@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const expectedState = getStateCookie(request);
 
     if (!code) {
-      return new NextResponse(renderOauthResponse("github", "error", { error: "Missing code" }), {
+      return new NextResponse(renderOauthResponse(request, "github", "error", { error: "Missing code" }), {
         status: 400,
         headers: { "Content-Type": "text/html; charset=utf-8" },
       });
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     if (!state || !expectedState || state !== expectedState) {
       return new NextResponse(
-        renderOauthResponse("github", "error", { error: "Invalid OAuth state" }),
+        renderOauthResponse(request, "github", "error", { error: "Invalid OAuth state" }),
         {
           status: 400,
           headers: { "Content-Type": "text/html; charset=utf-8" },
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
     const token = await exchangeGitHubCode(request, code);
     return new NextResponse(
-      renderOauthResponse("github", "success", {
+      renderOauthResponse(request, "github", "success", {
         token,
         provider: "github",
       }),
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "GitHub OAuth failed";
 
-    return new NextResponse(renderOauthResponse("github", "error", { error: message }), {
+    return new NextResponse(renderOauthResponse(request, "github", "error", { error: message }), {
       status: 500,
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });

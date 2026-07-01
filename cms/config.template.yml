@@ -1,9 +1,4 @@
-backend:
-  name: github
-  repo: ${GITHUB_REPO}
-  branch: main
-  base_url: ${GITHUB_OAUTH_BASE_URL}
-local_backend: true
+${BACKEND_BLOCK}
 publish_mode: editorial_workflow
 media_folder: public/uploads
 public_folder: /uploads

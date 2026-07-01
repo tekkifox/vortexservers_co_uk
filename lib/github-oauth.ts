@@ -113,8 +113,13 @@ function escapeHtml(value: string) {
   });
 }
 
-export function renderOauthResponse(provider: string, message: string, content: unknown) {
+function toOriginList(request: NextRequest) {
+  return [new URL(getOauthBaseUrl(request)).origin];
+}
+
+export function renderOauthResponse(request: NextRequest, provider: string, message: string, content: unknown) {
   const payload = `authorization:${provider}:${message}:${JSON.stringify(content)}`;
+  const origins = toOriginList(request);
   const html = `<!doctype html>
 <html>
   <head>
@@ -126,10 +131,29 @@ export function renderOauthResponse(provider: string, message: string, content: 
     <script>
       (function() {
         var payload = ${JSON.stringify(payload)};
-        if (window.opener) {
-          window.opener.postMessage(payload, window.location.origin);
+        var origins = ${JSON.stringify(origins)};
+        function contains(arr, elem) {
+          for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === elem) {
+              return true;
+            }
+          }
+          return false;
         }
-        window.close();
+
+        function receiveMessage(e) {
+          if (!contains(origins, e.origin)) {
+            return;
+          }
+
+          window.opener.postMessage(payload, e.origin);
+        }
+
+        window.addEventListener("message", receiveMessage, false);
+
+        if (window.opener) {
+          window.opener.postMessage("authorizing:${provider}", "*");
+        }
       })();
     </script>
     <p>${escapeHtml(message)}</p>
