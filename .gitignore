@@ -6,4 +6,5 @@ coverage
 .env.local
 .env.*.local
 public/uploads
+public/config.yml
 *.log

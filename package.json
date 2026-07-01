@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
+    "generate:cms-config": "node scripts/generate-cms-config.mjs",
+    "predev": "npm run generate:cms-config",
+    "prestart": "npm run generate:cms-config",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

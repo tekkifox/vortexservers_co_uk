@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: ${GITHUB_REPO}
   branch: main
 local_backend: true
 publish_mode: editorial_workflow
