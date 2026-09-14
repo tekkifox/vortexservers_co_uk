@@ -25,12 +25,16 @@ cp .env.example .env.local
 Populate `.env.local` with the values you need. Example values:
 
 ```env
-SITE_NAME=Vortex Servers
-PELICAN_API_BASE_URL=https://your-panel.example.com/api/client
+SITE_NAME=VorteX Servers
+PELICAN_API_BASE_URL=https://pelican.example.com/api/client
 PELICAN_CLIENT_API_TOKEN=your-client-secret-token
-NEXT_PUBLIC_PELICAN_PANEL_URL=https://your-panel.example.com
-GITHUB_REPO=owner/repo
-GITHUB_CONTENT_TOKEN=
+NEXT_PUBLIC_PELICAN_PANEL_URL=https://pelican.example.com
+GITHUB_REPO=tekkifox/vortexservers_co_uk
+GITHUB_OAUTH_BASE_URL=http://localhost:3000
+GITHUB_OAUTH_CLIENT_ID=your-client-secret-id
+GITHUB_OAUTH_CLIENT_SECRET=your-client-secret-token
+GITHUB_CONTENT_TOKEN=your-content-token
+NODE_ENV=development
 ```
 
 Notes about Pelican and GitHub tokens:

@@ -1,21 +1,14 @@
 services:
   web:
     image: ${IMAGE_NAME:-ghcr.io/tekkifox/vortexservers_co_uk:latest}
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      NODE_ENV: production
-      PORT: 3000
-      HOSTNAME: 0.0.0.0
-      GITHUB_OAUTH_CLIENT_ID: ${GITHUB_OAUTH_CLIENT_ID}
-      GITHUB_OAUTH_CLIENT_SECRET: ${GITHUB_OAUTH_CLIENT_SECRET}
-      GITHUB_CONTENT_TOKEN: ${GITHUB_CONTENT_TOKEN}
-      GITHUB_REPO: ${GITHUB_REPO}
-      SITE_NAME: ${SITE_NAME:-VorteX Servers}
-      PELICAN_API_BASE_URL: ${PELICAN_API_BASE_URL:-https://panel.example.com/api/client}
-      PELICAN_CLIENT_API_TOKEN: ${PELICAN_CLIENT_API_TOKEN:-change-me}
-      NEXT_PUBLIC_PELICAN_PANEL_URL: ${NEXT_PUBLIC_PELICAN_PANEL_URL:-https://panel.example.com}
-    restart: unless-stopped
+    restart: always
+    hostname: vortexservers_co_uk-web
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    env_file: 
+      - stack.env
+    networks:
+      proxy:
+networks:
+  proxy:
+    external: true
