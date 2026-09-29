@@ -1,4 +1,3 @@
-import { randomBytes } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { buildSecurityHeaders } from "@/lib/security-headers";
 
@@ -9,7 +8,15 @@ export const config = {
 };
 
 function createNonce() {
-  return randomBytes(16).toString("base64");
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+
+  return btoa(binary);
 }
 
 export function middleware(request: NextRequest) {
