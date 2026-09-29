@@ -19,9 +19,12 @@ function createNonce() {
   return btoa(binary);
 }
 
+const ADMIN_PATH = "/admin";
+
 export function middleware(request: NextRequest) {
   const nonce = createNonce();
-  const headers = buildSecurityHeaders(nonce);
+  const allowEval = request.nextUrl.pathname.startsWith(ADMIN_PATH);
+  const headers = buildSecurityHeaders(nonce, allowEval);
   const csp = headers["Content-Security-Policy"];
 
   const requestHeaders = new Headers(request.headers);
