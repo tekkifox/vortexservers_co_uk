@@ -6,7 +6,10 @@ const DECAP_SCRIPT_ORIGIN = "https://unpkg.com";
 const GITHUB_API_ORIGIN = "https://api.github.com";
 const GITHUB_ORIGIN = "https://github.com";
 
-export function buildContentSecurityPolicy(nonce: string, isDev: boolean) {
+export function buildContentSecurityPolicy(
+  nonce: string,
+  options: { isDev: boolean; allowEval: boolean },
+) {
   const scriptSources = [
     "'self'",
     `'nonce-${nonce}'`,
@@ -14,7 +17,9 @@ export function buildContentSecurityPolicy(nonce: string, isDev: boolean) {
     GITHUB_API_ORIGIN,
   ];
 
-  if (isDev) {
+  // The Decap CMS bundle evaluates code at runtime, so the admin routes need
+  // 'unsafe-eval'. It is scoped to /admin rather than the whole site.
+  if (options.allowEval || options.isDev) {
     scriptSources.push("'unsafe-eval'");
   }
 
@@ -36,7 +41,7 @@ export function buildContentSecurityPolicy(nonce: string, isDev: boolean) {
     "form-action": ["'self'", GITHUB_ORIGIN],
   };
 
-  if (!isDev) {
+  if (!options.isDev) {
     directives["upgrade-insecure-requests"] = [];
   }
 
@@ -47,11 +52,11 @@ export function buildContentSecurityPolicy(nonce: string, isDev: boolean) {
     .join("; ");
 }
 
-export function buildSecurityHeaders(nonce: string) {
+export function buildSecurityHeaders(nonce: string, allowEval = false) {
   const isDev = process.env.NODE_ENV === "development";
 
   const headers: Record<string, string> = {
-    "Content-Security-Policy": buildContentSecurityPolicy(nonce, isDev),
+    "Content-Security-Policy": buildContentSecurityPolicy(nonce, { isDev, allowEval }),
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "SAMEORIGIN",
     "Referrer-Policy": "strict-origin-when-cross-origin",
