@@ -114,9 +114,14 @@ function toOriginList(request: NextRequest) {
   return [new URL(getPublicOrigin(request)).origin];
 }
 
+function getNonce(request: NextRequest) {
+  return request.headers.get("x-nonce") ?? "";
+}
+
 export function renderOauthResponse(request: NextRequest, provider: string, message: string, content: unknown) {
   const payload = `authorization:${provider}:${message}:${JSON.stringify(content)}`;
   const origins = toOriginList(request);
+  const nonce = escapeHtml(getNonce(request));
   const html = `<!doctype html>
 <html>
   <head>
@@ -125,7 +130,7 @@ export function renderOauthResponse(request: NextRequest, provider: string, mess
     <title>Authorizing</title>
   </head>
   <body>
-    <script>
+    <script nonce="${nonce}">
       (function() {
         var payload = ${JSON.stringify(payload)};
         var origins = ${JSON.stringify(origins)};
