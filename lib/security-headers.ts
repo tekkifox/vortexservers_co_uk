@@ -1,14 +1,54 @@
-// The CSP is built in middleware, which runs on the edge runtime where only
-// NEXT_PUBLIC_* values are available. Sources are therefore kept static: the
-// browser only talks to this origin (API calls are proxied through /api) plus
-// Decap CMS and the GitHub API used by the admin OAuth flow.
 const DECAP_SCRIPT_ORIGIN = "https://unpkg.com";
 const GITHUB_API_ORIGIN = "https://api.github.com";
 const GITHUB_ORIGIN = "https://github.com";
 
+function unique(values: string[]) {
+  return Array.from(new Set(values));
+}
+
+function parseOrigin(value: string | undefined, fallback: string) {
+  const raw = value?.trim();
+
+  if (!raw) {
+    return fallback;
+  }
+
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return fallback;
+  }
+}
+
+function githubOrigin() {
+  return parseOrigin(process.env.GITHUB_HOSTNAME, GITHUB_ORIGIN);
+}
+
+function pelicanOrigins() {
+  const configured = [
+    process.env.NEXT_PUBLIC_PELICAN_PANEL_URL,
+    process.env.PELICAN_PANEL_URL,
+    process.env.PELICAN_API_BASE_URL,
+  ]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value));
+
+  const origins = new Set<string>();
+
+  for (const value of configured) {
+    try {
+      origins.add(new URL(value).origin);
+    } catch {
+      // Ignore malformed configuration instead of emitting an invalid CSP source.
+    }
+  }
+
+  return [...origins];
+}
+
 export function buildContentSecurityPolicy(nonce: string, isDev: boolean) {
   const scriptSources = [
-    "'self'",
+    `'self'`,
     `'nonce-${nonce}'`,
     DECAP_SCRIPT_ORIGIN,
     GITHUB_API_ORIGIN,
@@ -17,6 +57,15 @@ export function buildContentSecurityPolicy(nonce: string, isDev: boolean) {
   if (isDev) {
     scriptSources.push("'unsafe-eval'");
   }
+
+  const connectSources = unique([
+    "'self'",
+    GITHUB_API_ORIGIN,
+    githubOrigin(),
+    ...pelicanOrigins(),
+  ]);
+
+  const formActions = unique(["'self'", githubOrigin()]);
 
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
@@ -29,11 +78,11 @@ export function buildContentSecurityPolicy(nonce: string, isDev: boolean) {
     "img-src": ["'self'", "data:", "blob:", "https:"],
     "font-src": ["'self'", "data:"],
     "media-src": ["'self'", "data:", "blob:"],
-    "connect-src": ["'self'", GITHUB_API_ORIGIN, GITHUB_ORIGIN],
+    "connect-src": connectSources,
     "frame-src": ["'self'", "blob:"],
     "worker-src": ["'self'", "blob:"],
     "manifest-src": ["'self'"],
-    "form-action": ["'self'", GITHUB_ORIGIN],
+    "form-action": formActions,
   };
 
   if (!isDev) {
