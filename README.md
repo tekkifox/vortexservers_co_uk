@@ -5,13 +5,14 @@ Run the app locally or in production. Tested with Node.js 18.17+.
 ## Requirements
 
 - Node.js 18.17+ (or compatible 18.x)
+- pnpm 10 (enable it with `corepack enable pnpm`)
 
 ## Install
 
 Install dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 ## Environment
@@ -67,7 +68,7 @@ GITHUB_CONTENT_BRANCH=main        # optional (defaults to main)
 Start the dev server:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Open http://localhost:3000
@@ -75,8 +76,8 @@ Open http://localhost:3000
 For a production-style local test:
 
 ```bash
-npm run build
-npm start
+pnpm run build
+pnpm start
 ```
 
 ## GitHub OAuth (admin login)
