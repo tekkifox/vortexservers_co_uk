@@ -4,13 +4,13 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
-COPY package.json ./
-RUN npm install
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable pnpm && pnpm i --frozen-lockfile
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+RUN corepack enable pnpm && pnpm run build
 
 FROM base AS runner
 ENV NODE_ENV=production
