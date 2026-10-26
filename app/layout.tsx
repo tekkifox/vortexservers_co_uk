@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -5,6 +7,10 @@ import logo from "../images/va_logo.png";
 import "./globals.css";
 import { Footer } from "@/components/site/Footer";
 import { siteConfig } from "@/lib/site";
+
+// The same build also runs in a Portainer container, where Vercel does not
+// serve /_vercel/*. Only mount the SDKs when Vercel provides those endpoints.
+const analyticsEnabled = Boolean(process.env.VERCEL);
 
 export const metadata: Metadata = {
   title: {
@@ -59,6 +65,8 @@ export default function RootLayout({
 
           <Footer />
         </div>
+        {analyticsEnabled && <Analytics />}
+        {analyticsEnabled && <SpeedInsights />}
       </body>
     </html>
   );
