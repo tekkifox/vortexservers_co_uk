@@ -8,13 +8,13 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 interface CmsPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: CmsPageProps): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const page = await getPageBySlug(slug);
 
   if (!page) {
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: CmsPageProps): Promise<Metada
 }
 
 export default async function CmsPage({ params }: CmsPageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const page = await getPageBySlug(slug);
 
   if (!page) {
