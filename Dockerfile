@@ -1,4 +1,5 @@
 FROM node:26-alpine AS base
+RUN npm i -g corepack@0.36.0 && corepack enable pnpm
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 
