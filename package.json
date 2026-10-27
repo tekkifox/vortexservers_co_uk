@@ -22,7 +22,7 @@
     "remark-rehype": "^11.1.2"
   },
   "devDependencies": {
-    "decap-server": "^3.9.1",
+    "decap-server": "^3.11.6",
     "@types/node": "^26.6.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
