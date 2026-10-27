@@ -20,6 +20,21 @@
   },
   "packageRules": [
     {
+      "matchManagers": ["dockerfile"],
+      "groupName": "Docker base images",
+      "separateMajorMinor": false,
+      "automerge": false,
+      "labels": ["dependencies", "toolchain"]
+    },
+    {
+      "matchDepTypes": ["packageManager"],
+      "matchPackageNames": ["pnpm"],
+      "groupName": "pnpm package manager",
+      "separateMajorMinor": false,
+      "automerge": false,
+      "labels": ["dependencies", "toolchain"]
+    },
+    {
       "matchPackageNames": [
         "react",
         "react-dom",
