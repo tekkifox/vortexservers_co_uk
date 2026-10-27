@@ -124,3 +124,21 @@ The home and server listing pages fetch from these endpoints in the browser. The
 ## Production notes
 
 CMS page content is read directly from GitHub at request time, so publishing content in Decap does not require rebuilding or redeploying a Docker image. Ensure the app can read GitHub content at runtime (public repo or `GITHUB_CONTENT_TOKEN` set).
+
+## Dependency updates (Renovate)
+
+Renovate keeps dependencies up to date using [`renovate.json`](renovate.json) at the repository root. It runs in the `Europe/London` timezone. There is deliberately no update schedule window: concurrency is the throttle instead (at most 3 open Renovate PRs and 2 new PRs per hour), so security fixes are not held back for a weekly window.
+
+What to expect:
+
+- Routine minor and patch updates arrive as pull requests. Linked packages are grouped so they move together:
+  - **React** — `react`, `react-dom`, `@types/react`, and `@types/react-dom` in one PR. The runtime and its typings stay in lockstep, so a React bump cannot land without the matching type definitions.
+  - **Vercel analytics** — `@vercel/analytics` and `@vercel/speed-insights` in one PR.
+  - **Next.js** — `next` on its own; no other package in this repository is pinned to a Next.js version.
+- Major updates are labelled `major` and are never automerged. In fact nothing automerges: the global default is `automerge: false`, and this is repeated for majors and for every group.
+- Vulnerability alerts are handled at any time, outside the normal update cadence.
+- pnpm lockfile maintenance is enabled so the committed lockfile is refreshed periodically (also without automerge).
+
+The repository's Dependency Dashboard issue is the live queue: it lists pending, ignored, and rate-limited updates.
+
+Installing the Renovate app on the account does not by itself grant it access to this repository. Repository access must be granted to Renovate for `tekkifox/vortexservers_co_uk`; the appearance of the Dependency Dashboard issue is the signal that it has processed this repository.
