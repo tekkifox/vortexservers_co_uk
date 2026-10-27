@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "timezone": "Europe/London",
+  "minimumReleaseAge": "24 hours",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
   "dependencyDashboard": true,
   "semanticCommits": "enabled",
   "rangeStrategy": "bump",
