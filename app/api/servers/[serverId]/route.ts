@@ -5,14 +5,15 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 interface ServerRouteParams {
-  params: {
+  params: Promise<{
     serverId: string;
-  };
+  }>;
 }
 
 export async function GET(_: Request, { params }: ServerRouteParams) {
   try {
-    const server = await getPelicanServer(params.serverId);
+    const { serverId } = await params;
+    const server = await getPelicanServer(serverId);
 
     if (!server) {
       return NextResponse.json({ error: "Server not found" }, { status: 404 });

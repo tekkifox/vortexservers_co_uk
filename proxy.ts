@@ -21,7 +21,7 @@ function createNonce() {
 
 const ADMIN_PATH = "/admin";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const nonce = createNonce();
   const allowEval = request.nextUrl.pathname.startsWith(ADMIN_PATH);
   const headers = buildSecurityHeaders(nonce, allowEval);
