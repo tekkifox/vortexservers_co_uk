@@ -1,7 +1,7 @@
-// The CSP is built in middleware, which runs on the edge runtime where only
-// NEXT_PUBLIC_* values are available. Sources are therefore kept static: the
-// browser only talks to this origin (API calls are proxied through /api) plus
-// Decap CMS and the GitHub API used by the admin OAuth flow.
+// The CSP is built in proxy.ts, which runs on the Node.js runtime in Next.js
+// 16. Sources are kept static: the browser only talks to this origin (API
+// calls are proxied through /api) plus Decap CMS and the GitHub API used by
+// the admin OAuth flow.
 const DECAP_SCRIPT_ORIGIN = "https://unpkg.com";
 const GITHUB_API_ORIGIN = "https://api.github.com";
 const GITHUB_ORIGIN = "https://github.com";

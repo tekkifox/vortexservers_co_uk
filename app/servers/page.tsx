@@ -1,5 +1,10 @@
 import { ServersDirectory } from "@/components/servers/ServersDirectory";
 
+// The CSP nonce is injected per request. Static prerendering would ship inline
+// scripts without that nonce, so this page has to render dynamically too.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ServersIndexPage() {
   return (
     <section className="section">

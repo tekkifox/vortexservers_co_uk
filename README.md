@@ -1,10 +1,10 @@
 # Vortex Servers
 
-Run the app locally or in production. Tested with Node.js 18.17+.
+Run the app locally or in production. Tested with Node.js 20.9+.
 
 ## Requirements
 
-- Node.js 18.17+ (or compatible 18.x)
+- Node.js 20.9+ (or compatible 20.x/22.x)
 - pnpm 10 (enable it with `corepack enable pnpm`)
 
 ## Install
