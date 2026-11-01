@@ -36,6 +36,7 @@ Required variables:
 
 - `IMAGE_NAME` - `ghcr.io/<owner>/<repo>:latest`
 - `SITE_NAME` - your public site name
+- `SITE_URL` - optional canonical public origin (`https://www.vortexservers.co.uk` by default) used by `sitemap.xml` and `robots.txt`
 - `PELICAN_API_BASE_URL` - Pelican client API root, usually `https://panel.example.com/api/client`
 - `PELICAN_CLIENT_API_TOKEN` - Pelican client/account API token, using the full `secret_token` value from Pelican
 - `NEXT_PUBLIC_PELICAN_PANEL_URL` - public panel URL used in links
