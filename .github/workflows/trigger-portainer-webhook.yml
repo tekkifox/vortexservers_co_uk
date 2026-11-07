@@ -31,7 +31,7 @@ jobs:
         uses: tailscale/github-action@v4
         with:
           authkey: ${{ secrets.TS_AUTHKEY }}
-          args: --hostname=gh-vortexservers-${{ github.run_id }}
+          hostname: gh-vortexservers-${{ github.run_id }}
 
       - name: Redeploy Portainer stack via API
         shell: bash
