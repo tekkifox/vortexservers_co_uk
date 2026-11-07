@@ -18,7 +18,7 @@ For this repository it will usually be:
 
 `ghcr.io/<your-github-username>/vortexservers_co_uk:latest`
 
-After the image is published, the `Trigger Portainer webhook` workflow can call your Portainer stack webhook automatically when `main` completes successfully.
+After the image is published, the `Redeploy Portainer stack` workflow redeploys the stack through the Portainer API automatically when `main` completes successfully.
 
 ## 2. Create the Portainer stack
 
@@ -49,11 +49,15 @@ Create the GitHub OAuth app with a callback URL of `https://your-site.example.co
 
 If the repo is private, add the GitHub credentials Portainer needs to read the repository before deploying the stack.
 
-## 4. Add the GitHub webhook secret
+## 4. Add the GitHub secrets
 
-Create a repository secret in GitHub named `PORTAINER_WEBHOOK_URL` and set it to the Portainer stack webhook URL.
+The redeploy workflow joins the tailnet with Tailscale and then calls the Portainer API, so it needs these repository secrets:
 
-In Portainer, open the stack and create or copy the stack webhook URL from the webhook action. The workflow will send a `POST` request to that URL after the image publish workflow succeeds on `main`.
+- `TS_AUTHKEY` - Tailscale auth key for a tagged `gh-*` node
+- `PORTAINER_URL` - Portainer URL on the tailnet (self-signed certificate, so the workflow uses `curl -k`)
+- `PORTAINER_API_KEY` - Portainer API key with access to the stack
+
+The workflow discovers the `vortexservers_co_uk` stack by name, reads its `Env` array, and sends `docker-compose.portainer.yml` with `PullImage: true`. No stack webhook or `PORTAINER_WEBHOOK_URL` secret is required.
 
 ## 5. Deploy
 
