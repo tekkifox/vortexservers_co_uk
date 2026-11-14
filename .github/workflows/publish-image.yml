@@ -173,9 +173,11 @@ jobs:
           docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.version }}
 
   # The stack is owned by Ansible on the vortex host and lives at
-  # /home/ross/stacks/vortex-vortexservers-co-uk. This job asks the fleet deploy
-  # seat (a restricted SSH account with a forced command) to pull the freshly
-  # published image and recreate that one stack.
+  # /home/ross/stacks/vortex-vortexservers-co-uk. This job asks the deploy seat
+  # (a restricted SSH account with a forced command) on the vortex host itself
+  # to pull the freshly published image and recreate that one stack. The seat's
+  # infrastructure tree is tekkifox/vortexservers_iac. Its address is a secret
+  # so this public repository never publishes a real hostname.
   deploy:
     name: Deploy vortexservers
     needs: merge
@@ -191,11 +193,10 @@ jobs:
 
       # DEPLOY_SEAT_HOST is a secret so this public repository never publishes
       # the deploy seat's address.
-      - name: Ask the fleet deploy seat to deploy
+      - name: Ask the deploy seat on vortex to deploy
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_SEAT_HOST: ${{ secrets.DEPLOY_SEAT_HOST }}
-          TARGET_HOST: vortex
           TARGET_STACKS: vortex-vortexservers-co-uk
         run: |
           set -euo pipefail
@@ -205,4 +206,4 @@ jobs:
           ssh -i "$HOME/.ssh/deploy" -p 32 \
             -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
             root@"$DEPLOY_SEAT_HOST" \
-            "fleet-deploy $TARGET_HOST $TARGET_STACKS deploy"
+            "vortex-deploy $TARGET_STACKS deploy"
