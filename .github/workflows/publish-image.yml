@@ -171,3 +171,38 @@ jobs:
       - name: Inspect image
         run: |
           docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.version }}
+
+  # The stack is owned by Ansible on the vortex host and lives at
+  # /home/ross/stacks/vortex-vortexservers-co-uk. This job asks the fleet deploy
+  # seat (a restricted SSH account with a forced command) to pull the freshly
+  # published image and recreate that one stack.
+  deploy:
+    name: Deploy vortexservers
+    needs: merge
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Join the tailnet
+        uses: tailscale/github-action@v4
+        with:
+          authkey: ${{ secrets.TS_AUTHKEY }}
+          hostname: gh-vortexservers-${{ github.run_id }}
+
+      # DEPLOY_SEAT_HOST is a secret so this public repository never publishes
+      # the deploy seat's address.
+      - name: Ask the fleet deploy seat to deploy
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SEAT_HOST: ${{ secrets.DEPLOY_SEAT_HOST }}
+          TARGET_HOST: vortex
+          TARGET_STACKS: vortex-vortexservers-co-uk
+        run: |
+          set -euo pipefail
+          install -d -m 0700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$HOME/.ssh/deploy"
+          chmod 0600 "$HOME/.ssh/deploy"
+          ssh -i "$HOME/.ssh/deploy" -p 32 \
+            -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
+            root@"$DEPLOY_SEAT_HOST" \
+            "fleet-deploy $TARGET_HOST $TARGET_STACKS deploy"

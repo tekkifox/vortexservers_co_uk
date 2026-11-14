@@ -88,7 +88,7 @@ pnpm start
 The canonical origin comes from `SITE_URL` when set. Otherwise:
 
 - the `dev` Vercel branch uses `https://dev.vortexservers.co.uk`
-- production on Vercel and the Docker/Portainer image use `https://www.vortexservers.co.uk`
+- production on Vercel and the deployed Docker image use `https://www.vortexservers.co.uk`
 
 `*.vercel.app` hosts are always rejected, so a sitemap can never be full of per-deployment preview URLs. `robots.txt` allows crawling and disallows `/admin`, `/api/`, `/auth`, and `/callback`.
 
