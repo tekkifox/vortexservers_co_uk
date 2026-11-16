@@ -6,6 +6,7 @@ import Link from "next/link";
 import logo from "../images/va_logo.png";
 import "./globals.css";
 import { Footer } from "@/components/site/Footer";
+import { getNavigation } from "@/lib/content";
 import { siteConfig } from "@/lib/site";
 
 // The same build also runs in a Portainer container, where Vercel does not
@@ -20,18 +21,13 @@ export const metadata: Metadata = {
   description: "CMS-driven game server hosting website powered by Pelican.",
 };
 
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/servers", label: "Servers" },
-  { href: "/rules", label: "Rules" },
-  { href: "/about", label: "About" },
-];
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const navigation = await getNavigation();
+
   return (
     <html lang="en">
       <body>
@@ -53,7 +49,7 @@ export default function RootLayout({
             </Link>
 
             <nav className="nav">
-              {navItems.map((item) => (
+              {navigation.items.map((item) => (
                 <Link key={item.href} href={item.href} className="nav-link">
                   {item.label}
                 </Link>
