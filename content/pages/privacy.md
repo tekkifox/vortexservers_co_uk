@@ -1,6 +1,6 @@
 ---
 title: Privacy Policy
-description: How VorteX Servers handles account, contact, and server-related information.
+description: How VorteX Servers handles account, contact, and site usage information.
 eyebrow: Legal
 ---
 
@@ -8,16 +8,15 @@ eyebrow: Legal
 
 _Last updated: 16 November 2026_
 
-This Privacy Policy explains how VorteX Servers ("we", "us", "our") collects, uses, and protects information when you visit our website at vortexservers.co.uk (the "Site") or use our game server hosting services. It should be read alongside our [Cookie Policy](/cookies) and [Terms of Service](/terms).
+This Privacy Policy explains how VorteX Servers ("we", "us", "our") collects, uses, and protects information when you visit our website at vortexservers.co.uk (the "Site"). It should be read alongside our [Cookie Policy](/cookies) and [Terms of Service](/terms).
 
 ## 1. Information we collect
 
 ### 1.1 Information you provide
 
 - **Account information** — name, email address, username, and password when you register.
-- **Contact information** — details you submit through contact forms, support tickets, or email.
-- **Payment information** — billing details processed by our third-party payment provider. We do not store full payment card numbers.
-- **Server configuration** — game settings, server names, and other preferences you set.
+- **Contact information** — details you submit through contact forms, support tickets, or community channels.
+- **User content** — posts, messages, and other content you submit to the Site or community.
 
 ### 1.2 Information collected automatically
 
@@ -33,10 +32,10 @@ We may receive information from third-party services you connect to your account
 
 We use the information we collect to:
 
-- Provide, operate, and maintain our services
-- Process transactions and manage your account
-- Respond to support requests and communicate with you
-- Monitor and improve the reliability, security, and performance of the Site and services
+- Provide, operate, and maintain the Site and community features
+- Manage your account and respond to support requests
+- Communicate with you about updates or community matters
+- Monitor and improve the reliability, security, and performance of the Site
 - Detect and prevent fraud, abuse, and security incidents
 - Comply with legal obligations
 
@@ -53,13 +52,13 @@ We process your personal data on the following legal bases under UK GDPR:
 
 We do not sell your personal data. We may share information with:
 
-- **Service providers** — hosting, payment processing, email delivery, and analytics providers who process data on our behalf under contract.
+- **Service providers** — hosting, email delivery, and analytics providers who process data on our behalf under contract.
 - **Law enforcement** — where required by law or to protect our rights and safety.
 - **Business transfers** — in the event of a merger, acquisition, or sale of assets.
 
 ## 5. Data retention
 
-We retain your information for as long as your account is active or as needed to provide services. After account closure, we may retain certain data for a reasonable period for legal, accounting, or security purposes. You may request deletion of your data at any time (see Section 7).
+We retain your information for as long as your account is active or as needed to operate the Site. After account closure, we may retain certain data for a reasonable period for legal, accounting, or security purposes. You may request deletion of your data at any time (see Section 7).
 
 ## 6. Data security
 
