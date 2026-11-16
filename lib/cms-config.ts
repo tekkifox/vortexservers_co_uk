@@ -141,5 +141,3 @@ export function buildCmsConfig(request: NextRequest) {
     "        widget: markdown",
   ].join("\n");
 }
-EOF
-echo "written"
