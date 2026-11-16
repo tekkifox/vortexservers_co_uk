@@ -54,7 +54,7 @@ The Site may contain links to third-party websites or services (including Discor
 
 ## 7. Limitation of liability
 
-To the fullest extent permitted by law, VorteX Servers is not liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Site. Our total liability for any claim is limited to the amount you paid for any premium features in the 12 months preceding the claim, or GBP 10, whichever is greater.
+To the fullest extent permitted by law, VorteX Servers is not liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Site.
 
 ## 8. Termination
 
