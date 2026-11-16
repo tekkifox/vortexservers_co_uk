@@ -11,6 +11,15 @@ const githubRepo = process.env.GITHUB_REPO?.trim();
 const githubBranch = process.env.GITHUB_CONTENT_BRANCH?.trim() || "main";
 const useRemoteContent = process.env.NODE_ENV === "production" && Boolean(githubRepo);
 
+export interface NavItem {
+  label: string;
+  href: string;
+}
+
+export interface CmsNavigation {
+  items: NavItem[];
+}
+
 export interface CmsPage {
   slug: string;
   title: string;
@@ -90,25 +99,37 @@ async function readRemoteFile(pathname: string) {
 }
 
 async function readPageSource(slug: string) {
-  if (useRemoteContent) {
-    for (const extension of ["md", "mdx"]) {
-      const source = await readRemoteFile(`content/pages/${slug}.${extension}`);
+  const candidateDirs = slug === "navigation"
+    ? [path.join(process.cwd(), "content", "settings"), contentRoot]
+    : [contentRoot];
 
-      if (source) {
-        return source;
+  if (useRemoteContent) {
+    const remoteDirs = slug === "navigation"
+      ? ["content/settings", "content/pages"]
+      : ["content/pages"];
+
+    for (const dir of remoteDirs) {
+      for (const extension of ["md", "mdx"]) {
+        const source = await readRemoteFile(`${dir}/${slug}.${extension}`);
+
+        if (source) {
+          return source;
+        }
       }
     }
 
     return null;
   }
 
-  for (const extension of ["md", "mdx"]) {
-    const markdownPath = path.join(contentRoot, `${slug}.${extension}`);
+  for (const dir of candidateDirs) {
+    for (const extension of ["md", "mdx"]) {
+      const markdownPath = path.join(dir, `${slug}.${extension}`);
 
-    try {
-      return await fs.readFile(markdownPath, "utf8");
-    } catch {
-      continue;
+      try {
+        return await fs.readFile(markdownPath, "utf8");
+      } catch {
+        continue;
+      }
     }
   }
 
@@ -148,6 +169,39 @@ export async function getAllPages() {
   const pages = await Promise.all(slugs.map((slug) => getPageBySlug(slug)));
 
   return pages.filter((page): page is CmsPage => Boolean(page));
+}
+
+export async function getNavigation(): Promise<CmsNavigation> {
+  const fallback: CmsNavigation = {
+    items: [
+      { label: "Home", href: "/" },
+      { label: "Servers", href: "/servers" },
+      { label: "Rules", href: "/rules" },
+      { label: "About", href: "/about" },
+    ],
+  };
+
+  try {
+    const source = await readPageSource("navigation");
+
+    if (!source) {
+      return fallback;
+    }
+
+    const { data } = matter(source);
+    const items = Array.isArray(data.items)
+      ? data.items
+          .map((item: { label?: string; href?: string }) => ({
+            label: String(item?.label ?? "").trim(),
+            href: String(item?.href ?? "").trim(),
+          }))
+          .filter((item) => item.label && item.href)
+      : [];
+
+    return items.length ? { items } : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 export async function getPageBySlug(slug: string) {
