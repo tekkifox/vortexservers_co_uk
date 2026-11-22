@@ -32,9 +32,7 @@ there, not here.
 ## Required GitHub secrets
 
 The deploy job runs on the self-hosted vortex runner and does not require
-Tailscale or SSH deploy secrets. The former `TS_AUTHKEY`, `DEPLOY_SSH_KEY`,
-`DEPLOY_SEAT_HOST`, `PORTAINER_URL`, and `PORTAINER_API_KEY` secrets are no
-longer read by any workflow and can be deleted.
+deploy secrets or a remote connection from GitHub-hosted runners.
 
 ## Manual deploy
 
