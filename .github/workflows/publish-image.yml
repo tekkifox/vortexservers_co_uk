@@ -173,37 +173,52 @@ jobs:
           docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.version }}
 
   # The stack is owned by Ansible on the vortex host and lives at
-  # /home/ross/stacks/vortex-vortexservers-co-uk. This job asks the deploy seat
-  # (a restricted SSH account with a forced command) on the vortex host itself
-  # to pull the freshly published image and recreate that one stack. The seat's
-  # infrastructure tree is tekkifox/vortexservers_iac. Its address is a secret
-  # so this public repository never publishes a real hostname.
+  # /home/ross/stacks/vortex-vortexservers-co-uk. This job runs on the
+  # self-hosted vortex runner and invokes the host deploy wrapper directly via
+  # limited sudo, like tekkifox/vortexservers_iac deploy-stack.yml does.
   deploy:
     name: Deploy vortexservers
     needs: merge
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - linux
+      - X64
+      - vortexservers
+    timeout-minutes: 30
 
     steps:
-      - name: Join the tailnet
-        uses: tailscale/github-action@v4
-        with:
-          authkey: ${{ secrets.TS_AUTHKEY }}
-          hostname: gh-vortexservers-${{ github.run_id }}
-
-      # DEPLOY_SEAT_HOST is a secret so this public repository never publishes
-      # the deploy seat's address.
-      - name: Ask the deploy seat on vortex to deploy
+      - name: Validate the deploy inputs
         env:
-          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_SEAT_HOST: ${{ secrets.DEPLOY_SEAT_HOST }}
-          TARGET_STACKS: vortex-vortexservers-co-uk
+          STACKS: vortex-vortexservers-co-uk
+          ACTION: deploy
         run: |
           set -euo pipefail
-          install -d -m 0700 "$HOME/.ssh"
-          printf '%s\n' "$DEPLOY_SSH_KEY" > "$HOME/.ssh/deploy"
-          chmod 0600 "$HOME/.ssh/deploy"
-          ssh -i "$HOME/.ssh/deploy" -p 32 \
-            -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
-            root@"$DEPLOY_SEAT_HOST" \
-            "vortex-deploy $TARGET_STACKS deploy"
+          case "$ACTION" in
+            deploy|restart) ;;
+            *)
+              echo "::error::action must be deploy or restart"
+              exit 1
+              ;;
+          esac
+          [[ -n "$STACKS" ]] || {
+            echo "::error::stacks must not be empty"
+            exit 1
+          }
+          IFS=',' read -r -a stack_list <<< "$STACKS"
+          for stack in "${stack_list[@]}"; do
+            if [[ ! "$stack" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+              echo "::error::invalid stack name '$stack'; names must match ^[a-z0-9][a-z0-9-]*$"
+              exit 1
+            fi
+          done
+          echo "Validated: stacks=$STACKS action=$ACTION"
+
+      - name: Deploy the stack on vortex
+        env:
+          STACKS: vortex-vortexservers-co-uk
+          ACTION: deploy
+        run: |
+          set -euo pipefail
+          echo "Running: sudo /usr/local/bin/vortex-deploy $STACKS $ACTION"
+          sudo /usr/local/bin/vortex-deploy "$STACKS" "$ACTION"
