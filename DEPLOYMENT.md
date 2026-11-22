@@ -1,8 +1,7 @@
 # Deployment
 
 The site ships as a container image on GHCR and is deployed to the `vortex` host
-by Ansible on that host. Portainer no longer owns any of this repository's
-stacks.
+by Ansible on that host.
 
 ## How a release works
 
@@ -12,36 +11,30 @@ stacks.
    the `merge` job publishes the multi-arch manifest. The image name is
    `ghcr.io/<owner>/<repo>`, for this repository usually
    `ghcr.io/tekkifox/vortexservers_co_uk:latest`.
-3. On `main` only, the `deploy` job joins the tailnet and asks the deploy seat
-   on the `vortex` host itself to deploy:
-   - the job writes the restricted `DEPLOY_SSH_KEY` and connects to the seat on
-     port 32;
-   - the seat's forced command runs
-     `vortex-deploy vortex-vortexservers-co-uk deploy` - there is no host
-     argument, because the seat runs on the one host it manages;
-   - the seat validates the stack, pulls the image, recreates only that stack,
-     and prints the image id.
+3. On `main` only, the `deploy` job runs on the self-hosted `vortexservers`
+   runner on the `vortex` host itself. It invokes the host deploy wrapper
+   directly via limited sudo:
+
+   ```bash
+   sudo /usr/local/bin/vortex-deploy "vortex-vortexservers-co-uk" deploy
+   ```
+
+   The wrapper validates the stack, pulls the image, recreates only that stack,
+   and prints the image id.
 
 The stack is owned by Ansible, not Portainer. It runs from
 `/home/ross/stacks/vortex-vortexservers-co-uk` on the `vortex` host
 (`vortex-vortexservers-co-uk` / `vortexservers.co.uk`) and was cut over to
 Ansible on 2026-11-14. The Ansible tree that owns it is `tekkifox/vortexservers_iac`,
-which also provides the `vortex-deploy` command the seat runs; configuration
-changes belong there, not here.
+which also provides the `vortex-deploy` command; configuration changes belong
+there, not here.
 
 ## Required GitHub secrets
 
-These repository secrets are already installed:
-
-- `TS_AUTHKEY` - Tailscale auth key for a tagged `gh-*` node.
-- `DEPLOY_SSH_KEY` - restricted SSH key whose only privilege is the deploy
-  seat's forced command. It is the vortex deploy key, not the fleet key.
-- `DEPLOY_SEAT_HOST` - address of the deploy seat, which runs on the `vortex`
-  host. It is a secret so this public repository never publishes the seat's
-  hostname.
-
-The former `PORTAINER_URL` and `PORTAINER_API_KEY` secrets are no longer read by
-any workflow and can be deleted.
+The deploy job runs on the self-hosted vortex runner and does not require
+Tailscale or SSH deploy secrets. The former `TS_AUTHKEY`, `DEPLOY_SSH_KEY`,
+`DEPLOY_SEAT_HOST`, `PORTAINER_URL`, and `PORTAINER_API_KEY` secrets are no
+longer read by any workflow and can be deleted.
 
 ## Manual deploy
 
@@ -50,12 +43,10 @@ selected: the image is rebuilt and the `deploy` job runs. A tag push or a
 dispatch on any other branch publishes an image but skips the deploy, because
 the job is gated on `github.ref == 'refs/heads/main'`.
 
-From a machine already on the tailnet, with the same restricted key, the seat
-on the `vortex` host can also be called directly:
+From the `vortex` host, the same deploy wrapper can be run directly:
 
 ```bash
-ssh -i ~/.ssh/deploy -p 32 root@<deploy-seat-host> \
-  "vortex-deploy vortex-vortexservers-co-uk deploy"
+sudo /usr/local/bin/vortex-deploy "vortex-vortexservers-co-uk" deploy
 ```
 
 ## Stack configuration
@@ -89,4 +80,5 @@ development compose file with a build context.
 
 If the GHCR package is private, the host must be able to pull it: log in to
 `ghcr.io` on the deploy host with a token that has `read:packages`, or make the
-package public. The deploy job itself never pulls the image; the seat does.
+package public. The deploy job itself never pulls the image; the host deploy
+wrapper does.
